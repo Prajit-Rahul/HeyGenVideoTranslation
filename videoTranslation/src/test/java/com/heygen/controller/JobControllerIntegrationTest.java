@@ -90,4 +90,55 @@ public class JobControllerIntegrationTest {
 
         System.out.println("Global timeout updated successfully"); // Logs a success message.
     }
+
+    /**
+     * Tests the /api/status/{jobId} endpoint to verify job status transitions to "completed"
+     * when the elapsed time is between timeout and twice the timeout.
+     *
+     * @throws Exception if the mock request fails.
+     */
+    @Test
+    public void testJobCompletedStatus() throws Exception {
+        // First, simulate job start and get jobId
+        String jobId = jobService.startJob(); // Starts a job using the JobService and retrieves its ID.
+        System.out.println("Job ID: " + jobId); // Logs the job ID for reference.
+
+        // Wait for a duration between timeout and 2x timeout to ensure the job enters the "completed" state.
+        long waitTime = jobService.getGlobalTimeout() + 5000; // Slightly more than the timeout but less than 2x timeout.
+        Thread.sleep(waitTime); // Introduces a delay to simulate job processing time.
+
+        // Fetch the job status after the wait.
+        mockMvc.perform(get("/api/status/" + jobId) // Simulates a GET request to /api/status/{jobId}.
+                        .contentType(MediaType.APPLICATION_JSON)) // Specifies the request content type as JSON.
+                .andExpect(status().isOk()) // Verifies that the response status is 200 OK.
+                .andExpect(content().string(containsString("jobId"))) // Asserts that the response contains "jobId".
+                .andExpect(content().string(containsString("completed"))); // Asserts that the response contains "completed" status.
+
+        System.out.println("Job status transitioned to completed as expected."); // Logs the success of the test.
+    }
+
+    /**
+     * Tests the /api/status/{jobId} endpoint to verify job status transitions to "error" after the timeout period.
+     *
+     * @throws Exception if the mock request fails.
+     */
+    @Test
+    public void testJobErrorStatus() throws Exception {
+        // First, simulate job start and get jobId
+        String jobId = jobService.startJob(); // Starts a job using the JobService and retrieves its ID.
+        System.out.println("Job ID: " + jobId); // Logs the job ID for reference.
+
+        // Wait for more than double the default timeout to ensure the job enters the "error" state.
+        long waitTime = jobService.getGlobalTimeout() * 2 + 1000; // Slightly longer than 2x timeout.
+        Thread.sleep(waitTime); // Introduces a delay to simulate job processing time.
+
+        // Fetch the job status after the wait.
+        mockMvc.perform(get("/api/status/" + jobId) // Simulates a GET request to /api/status/{jobId}.
+                        .contentType(MediaType.APPLICATION_JSON)) // Specifies the request content type as JSON.
+                .andExpect(status().isOk()) // Verifies that the response status is 200 OK.
+                .andExpect(content().string(containsString("jobId"))) // Asserts that the response contains "jobId".
+                .andExpect(content().string(containsString("error"))); // Asserts that the response contains "error" status.
+
+        System.out.println("Job status transitioned to error as expected."); // Logs the success of the test.
+    }
 }
