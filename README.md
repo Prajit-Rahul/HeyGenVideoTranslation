@@ -127,8 +127,8 @@ Integration tests for the backend are located in `test/java/com/heygen/controlle
 
 1. Clone the repository and navigate to the backend directory.
    ```bash
-   git clone <repository-url>
-   cd backend
+   git clone https://github.com/Prajit-Rahul/HeyGenVideoTranslation.git
+   cd videoTranslation
    ```
 2. Build and run the backend.
    ```bash
@@ -184,7 +184,7 @@ Mocks backend responses to validate API interactions.
 
 1. Clone the repository and navigate to the frontend directory.
    ```bash
-   cd frontend
+   cd heygenfrontend
    ```
 2. Install dependencies and start the development server.
    ```bash
