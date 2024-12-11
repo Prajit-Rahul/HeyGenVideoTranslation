@@ -11,6 +11,7 @@ This document provides a comprehensive overview of the HeyGen Video Translation 
    - [Overview](#overview)
    - [APIs](#apis)
    - [Components](#components)
+   - [Assumptions](#assumptions)
    - [Tests](#tests)
    - [Setup and Running](#setup-and-running)
 2. [Frontend and Integration Documentation](#frontend-and-integration-documentation)
@@ -26,11 +27,12 @@ This document provides a comprehensive overview of the HeyGen Video Translation 
 ## Backend Documentation
 
 ### Overview
-
 The backend is a Spring Boot application that simulates a video translation service. It provides APIs to:
 - Start a translation job.
 - Poll the backend for job status updates.
 - Update the global timeout settings for the translation jobs.
+
+The backend updates job statuses (`pending`, `completed`, `error`) based on elapsed time, simulating real-world processing delays.
 
 ---
 
@@ -85,13 +87,39 @@ Custom exception handling for job-related errors.
 Represents a job entity with properties like `status`, `startTime`, and `timeout`.
 
 ---
+### Assumptions
 
-### Tests
+#### Pending
+- **Condition**: `elapsedTime ≤ timeout`
+- The job is still in progress.
 
-Integration tests for the backend are located in `test/java/com.heygen.controller/JobControllerIntegrationTest`. Key tests include:
-1. **Start Job**: Verifies job initiation and response.
-2. **Get Job Status**: Validates status polling functionality.
-3. **Set Global Timeout**: Tests timeout configuration.
+#### Completed
+- **Condition**: `timeout < elapsedTime ≤ 2 * timeout`
+- The job has finished successfully.
+
+#### Error
+- **Condition**: `elapsedTime > 2 * timeout`
+- The job has failed due to exceeding acceptable time limits.
+
+These assumptions simulate real-world delays and outcomes in a video translation process.
+
+---
+
+## Tests
+
+Integration tests for the backend are located in `test/java/com/heygen/controller/JobControllerIntegrationTest`. Key tests include:
+
+### 1. **Start Job**
+- Verifies job initiation and returns a valid job ID.
+
+### 2. **Get Job Status**
+  - **Pending Status**: Verifies job status is "pending" before the timeout.
+  - **Completed Status (After Timeout)**: Verifies job status is "completed" after the timeout but before twice the timeout.
+  - **Error Status (After Double Timeout)**: Verifies job status is "error" after double the timeout.
+
+### 3. **Set Global Timeout**
+- Tests the configuration and update of the global timeout.
+
 
 ---
 
