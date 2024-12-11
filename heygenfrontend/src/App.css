@@ -1,0 +1,47 @@
+.App {
+  display: block;
+}
+
+
+/* Position the image in the top-left corner */
+.image-container {
+  position: relative;
+  top: 20px;      /* Adjust the distance from the top */
+  left: 20px;     /* Adjust the distance from the left */
+  z-index: 1000;  
+}
+
+.title-image {
+  width: auto;
+  max-width: 200px;  /* Optional: Set a max width for the image */
+  height: auto;
+}
+
+.App-logo {
+  height: 40vmin;
+  pointer-events: none;
+}
+
+.App-header {
+  background-color: #282c34;
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  font-size: calc(10px + 2vmin);
+  color: white;
+}
+
+.App-link {
+  color: #61dafb;
+}
+
+@keyframes App-logo-spin {
+  from {
+    transform: rotate(0deg);
+  }
+  to {
+    transform: rotate(360deg);
+  }
+}
